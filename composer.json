@@ -1,0 +1,29 @@
+{
+    "name": "teltek/pumukit-oai-bundle",
+    "type": "symfony-bundle",
+    "description": "OAI bundle for PuMuKIT",
+    "keywords": [
+        "oai",
+        "symfony",
+        "bundle",
+        "pumukit",
+        "teltek"
+    ],
+    "homepage": "https://github.com/pumukit/PumukitOaiBundle",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Teltek Team",
+            "homepage": "http://teltek.es"
+        }
+    ],
+    "require": {
+        "php": ">=7.2",
+        "pumukit/pumukit": ">=3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Pumukit\\OAIBundle\\": ""
+        }
+    }
+}

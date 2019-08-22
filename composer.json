@@ -23,7 +23,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Pumukit\\OAIBundle\\": ""
+            "Pumukit\\OaiBundle\\": ""
         }
     }
 }

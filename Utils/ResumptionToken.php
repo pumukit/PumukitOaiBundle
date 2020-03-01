@@ -4,9 +4,6 @@ namespace Pumukit\OaiBundle\Utils;
 
 use DateTime;
 
-/**
- * OAI ResumptionToken immutable class (No setters).
- */
 class ResumptionToken
 {
     private $offset;
@@ -15,16 +12,7 @@ class ResumptionToken
     private $metadataPrefix;
     private $set;
 
-    /**
-     * ResumptionToken class construct.
-     *
-     * @param int      $offset
-     * @param DateTime $from
-     * @param DateTime $until
-     * @param string   $metadataPrefix
-     * @param string   $set
-     */
-    public function __construct($offset = 0, DateTime $from = null, DateTime $until = null, $metadataPrefix = null, $set = null)
+    public function __construct(int $offset = 0, ?DateTime $from = null, ?DateTime $until = null, ?string $metadataPrefix = null, ?string $set = null)
     {
         $this->offset = $offset;
         $this->from = $from;
@@ -33,62 +21,32 @@ class ResumptionToken
         $this->set = $set;
     }
 
-    /**
-     * Get the offset.
-     *
-     * @return int
-     */
-    public function getOffset()
+    public function getOffset(): int
     {
         return $this->offset;
     }
 
-    /**
-     * Get the from.
-     *
-     * @return null|DateTime
-     */
-    public function getFrom()
+    public function getFrom(): ?DateTime
     {
         return $this->from;
     }
 
-    /**
-     * Get the until.
-     *
-     * @return null|DateTime
-     */
-    public function getUntil()
+    public function getUntil(): ?DateTime
     {
         return $this->until;
     }
 
-    /**
-     * Get the metadata prefix.
-     *
-     * @return null|string
-     */
-    public function getMetadataPrefix()
+    public function getMetadataPrefix(): ?string
     {
         return $this->metadataPrefix;
     }
 
-    /**
-     * Get the set.
-     *
-     * @return null|string
-     */
-    public function getSet()
+    public function getSet(): ?string
     {
         return $this->set;
     }
 
-    /**
-     * Get the token of the ResumptionToken.
-     *
-     * @return string
-     */
-    public function encode()
+    public function encode(): string
     {
         $params = [];
         $params['offset'] = $this->offset;
@@ -108,10 +66,7 @@ class ResumptionToken
         return base64_encode(json_encode($params));
     }
 
-    /**
-     * Return next ResumptionToken with same parameters.
-     */
-    public function next()
+    public function next(): ResumptionToken
     {
         $next = clone $this;
         ++$next->offset;
@@ -119,14 +74,7 @@ class ResumptionToken
         return $next;
     }
 
-    /**
-     * Factory method to create a new ResumptionToken from a token.
-     *
-     * @param string $token
-     *
-     * @return ResumptionToken
-     */
-    public static function decode($token)
+    public static function decode(string $token): ResumptionToken
     {
         $base64Decode = base64_decode($token, true);
         if (false === $base64Decode) {

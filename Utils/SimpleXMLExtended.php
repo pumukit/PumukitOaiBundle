@@ -6,7 +6,7 @@ use SimpleXMLElement;
 
 class SimpleXMLExtended extends SimpleXMLElement
 {
-    public function addCDATA($cData)
+    public function addCDATA($cData): void
     {
         $node = dom_import_simplexml($this);
         $no = $node->ownerDocument;

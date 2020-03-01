@@ -196,10 +196,6 @@ class Iso639Convert
 
     public static function get($code1)
     {
-        if (isset(self::$languages[$code1])) {
-            return self::$languages[$code1];
-        }
-
-        return '';
+        return self::$languages[$code1] ?? '';
     }
 }

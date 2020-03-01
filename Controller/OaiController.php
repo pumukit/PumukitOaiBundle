@@ -2,25 +2,64 @@
 
 namespace Pumukit\OaiBundle\Controller;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Pumukit\BasePlayerBundle\Services\TrackUrlService;
 use Pumukit\OaiBundle\Utils\Iso639Convert;
 use Pumukit\OaiBundle\Utils\ResumptionToken;
 use Pumukit\OaiBundle\Utils\ResumptionTokenException;
 use Pumukit\OaiBundle\Utils\SimpleXMLExtended;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
 use Pumukit\SchemaBundle\Document\Series;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Pumukit\SchemaBundle\Services\PicService;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-/*
- * Open Archives Initiative Controller for PuMuKIT.
- *
- * Test with Repository Explorer (http://re.cs.uct.ac.za/)
- */
-class OaiController extends Controller
+class OaiController extends AbstractController
 {
+    private $documentManager;
+    private $picService;
+    private $trackService;
+    private $pumukitInfo;
+    private $pumukitOAIUseDcThumbnail;
+    private $pumukitOAIDcIdentifierUrlMapping;
+    private $pumukitOAIAudioDcType;
+    private $pumukitOAIVideoDcType;
+    private $pumukitOAIDcSubjectFormat;
+    private $pumukitOAIUseCopyrightAsDcPublisher;
+    private $pumukitOAIRoleForDcCreator;
+    private $pumukitOAIUseLicenseAsDcRights;
+
+    public function __construct(
+        DocumentManager $documentManager,
+        PicService $picService,
+        TrackUrlService $trackService,
+        $pumukitInfo,
+        $pumukitOAIUseDcThumbnail,
+        $pumukitOAIDcIdentifierUrlMapping,
+        $pumukitOAIAudioDcType,
+        $pumukitOAIVideoDcType,
+        $pumukitOAIDcSubjectFormat,
+        $pumukitOAIUseCopyrightAsDcPublisher,
+        $pumukitOAIRoleForDcCreator,
+        $pumukitOAIUseLicenseAsDcRights
+    ) {
+        $this->documentManager = $documentManager;
+        $this->picService = $picService;
+        $this->trackService = $trackService;
+        $this->pumukitInfo = $pumukitInfo;
+        $this->pumukitOAIUseDcThumbnail = $pumukitOAIUseDcThumbnail;
+        $this->pumukitOAIDcIdentifierUrlMapping = $pumukitOAIDcIdentifierUrlMapping;
+        $this->pumukitOAIAudioDcType = $pumukitOAIAudioDcType;
+        $this->pumukitOAIVideoDcType = $pumukitOAIVideoDcType;
+        $this->pumukitOAIDcSubjectFormat = $pumukitOAIDcSubjectFormat;
+        $this->pumukitOAIUseCopyrightAsDcPublisher = $pumukitOAIUseCopyrightAsDcPublisher;
+        $this->pumukitOAIRoleForDcCreator = $pumukitOAIRoleForDcCreator;
+        $this->pumukitOAIUseLicenseAsDcRights = $pumukitOAIUseLicenseAsDcRights;
+    }
+
     /**
      * @Route("/oai.xml", defaults={"_format": "xml"}, name="pumukit_oai_index")
      */
@@ -43,8 +82,7 @@ class OaiController extends Controller
         }
     }
 
-    // Genera la salida de GetRecord
-    public function getRecord($request)
+    public function getRecord(Request $request): Response
     {
         if ('oai_dc' !== $request->query->get('metadataPrefix')) {
             return $this->error('cannotDisseminateFormat', 'cannotDisseminateFormat');
@@ -52,7 +90,7 @@ class OaiController extends Controller
 
         $identifier = $request->query->get('identifier');
 
-        $mmObjColl = $this->get('doctrine_mongodb')->getRepository(MultimediaObject::class);
+        $mmObjColl = $this->documentManager->getRepository(MultimediaObject::class);
         $object = $mmObjColl->find(['id' => $identifier]);
 
         if (null === $object) {
@@ -73,7 +111,7 @@ class OaiController extends Controller
         return $this->genResponse($XMLrequest, $XMLgetRecord);
     }
 
-    public function listIdentifiers($request)
+    public function listIdentifiers(Request $request): Response
     {
         $verb = $request->query->get('verb');
         $limit = 10;
@@ -138,8 +176,7 @@ class OaiController extends Controller
         return $this->genResponse($XMLrequest, $XMLlist);
     }
 
-    // Genera el XML de error
-    protected function error($cod, $msg = '')
+    protected function error($cod, $msg = ''): Response
     {
         $request = '<request>'.$this->generateUrl('pumukit_oai_index', [], UrlGeneratorInterface::ABSOLUTE_URL).'</request>';
         $XMLrequest = new SimpleXMLExtended($request);
@@ -151,11 +188,10 @@ class OaiController extends Controller
         return $this->genResponse($XMLrequest, $XMLerror);
     }
 
-    // Modifica el objeto criteria de entrada añadiendo filtros de fechas (until & from) y de set si están definidos en la URI
     protected function filter($limit, $offset, \DateTime $from = null, \DateTime $until = null, $set = null)
     {
-        $multimediaObjectRepo = $this->get('doctrine_mongodb')->getRepository(MultimediaObject::class);
-        $seriesRepo = $this->get('doctrine_mongodb')->getRepository(Series::class);
+        $multimediaObjectRepo = $this->documentManager->getRepository(MultimediaObject::class);
+        $seriesRepo = $this->documentManager->getRepository(Series::class);
 
         $queryBuilder = $multimediaObjectRepo
             ->createStandardQueryBuilder()
@@ -182,14 +218,14 @@ class OaiController extends Controller
         return $queryBuilder->getQuery()->execute();
     }
 
-    private function identify()
+    private function identify(): Response
     {
         $request = '<request>'.$this->generateUrl('pumukit_oai_index', [], UrlGeneratorInterface::ABSOLUTE_URL).'</request>';
         $XMLrequest = new SimpleXMLExtended($request);
         $XMLrequest->addAttribute('verb', 'Identify');
 
         $XMLidentify = new SimpleXMLExtended('<Identify></Identify>');
-        $info = $this->container->getParameter('pumukit.info');
+        $info = $this->pumukitInfo;
         $XMLidentify->addChild('repositoryName', $info['description']);
         $XMLidentify->addChild('baseURL', $this->generateUrl('pumukit_oai_index', [], UrlGeneratorInterface::ABSOLUTE_URL));
         $XMLidentify->addChild('protocolVersion', '2.0');
@@ -205,7 +241,7 @@ class OaiController extends Controller
     {
         $identifier = $request->query->get('identifier');
 
-        $mmObjColl = $this->get('doctrine_mongodb')->getRepository(MultimediaObject::class);
+        $mmObjColl = $this->documentManager->getRepository(MultimediaObject::class);
         $mmObj = $mmObjColl->find(['id' => $identifier]);
 
         if ($request->query->has('identifier') && null === $mmObj) {
@@ -240,7 +276,7 @@ class OaiController extends Controller
             return $this->error('badArgument', 'The request includes illegal arguments, is missing required arguments, includes a repeated argument, or values for arguments have an illegal syntax');
         }
 
-        $allSeries = $this->get('doctrine_mongodb')->getRepository(Series::class);
+        $allSeries = $this->documentManager->getRepository(Series::class);
         $allSeries = $allSeries
             ->createQueryBuilder()
             ->limit($limit)
@@ -292,7 +328,7 @@ class OaiController extends Controller
         return $XMLheader;
     }
 
-    private function genObjectMetadata($XMLlist, $object)
+    private function genObjectMetadata($XMLlist, $object): void
     {
         $XMLmetadata = $XMLlist->addChild('metadata');
 
@@ -305,7 +341,7 @@ class OaiController extends Controller
         $XMLdescription->addCDATA($object->getDescription());
         $XMLoai_dc->addChild('dc:date', $object->getPublicDate()->format('Y-m-d'), 'http://purl.org/dc/elements/1.1/');
 
-        switch ($this->container->getParameter('pumukitoai.dc_identifier_url_mapping')) {
+        switch ($this->pumukitOAIDcIdentifierUrlMapping) {
             case 'all':
                 $url = $this->generateUrl('pumukit_webtv_multimediaobject_iframe', ['id' => $object->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
                 $XMLoai_dc->addChild('dc:identifier', $url, 'http://purl.org/dc/elements/1.1/');
@@ -345,22 +381,20 @@ class OaiController extends Controller
                 break;
         }
 
-        if ($this->container->getParameter('pumukitoai.use_dc_thumbnail')) {
-            $thumbnail = $this->get('pumukitschema.pic')->getFirstUrlPic($object, true);
+        if ($this->pumukitOAIUseDcThumbnail) {
+            $thumbnail = $this->picService->getFirstUrlPic($object, true);
             $XMLoai_dc->addChild('dc:thumbnail', $thumbnail, 'http://purl.org/dc/elements/1.1/');
         }
 
         foreach ($object->getFilteredTracksWithTags(['display']) as $track) {
-            $type = $track->isOnlyAudio() ?
-                $this->container->getParameter('pumukitoai.audio_dc_type') :
-                $this->container->getParameter('pumukitoai.video_dc_type');
+            $type = $track->isOnlyAudio() ? $this->pumukitOAIAudioDcType : $this->pumukitOAIVideoDcType;
             $XMLoai_dc->addChild('dc:type', $type, 'http://purl.org/dc/elements/1.1/');
             $XMLoai_dc->addChild('dc:format', $track->getMimeType(), 'http://purl.org/dc/elements/1.1/');
         }
         foreach ($object->getTags() as $tag) {
             /** @var SimpleXMLExtended */
             $XMLsubject = $XMLoai_dc->addChild('dc:subject', '', 'http://purl.org/dc/elements/1.1/');
-            switch ($this->container->getParameter('pumukitoai.dc_subject_format')) {
+            switch ($this->pumukitOAIDcSubjectFormat) {
                 case 'e-ciencia':
                     $cod = $tag->getCod();
                     if (($tag->isDescendantOfByCod('UNESCO')) || (0 === strpos($tag->getCod(), 'U9'))) {
@@ -399,7 +433,7 @@ class OaiController extends Controller
             $XMLsubject->addCDATA($subject);
         }
 
-        if ($this->container->getParameter('pumukitoai.use_copyright_as_dc_publisher')) {
+        if ($this->pumukitOAIUseCopyrightAsDcPublisher) {
             /** @var SimpleXMLExtended */
             $XMLpublisher = $XMLoai_dc->addChild('dc:publisher', '', 'http://purl.org/dc/elements/1.1/');
             $XMLpublisher->addCDATA($object->getCopyright());
@@ -409,7 +443,7 @@ class OaiController extends Controller
             $XMLpublisher->addCDATA('');
         }
 
-        $people = $object->getPeopleByRoleCod($this->container->getParameter('pumukitoai.role_for_dc_creator'), true);
+        $people = $object->getPeopleByRoleCod($this->pumukitOAIRoleForDcCreator, true);
         foreach ($people as $person) {
             /** @var SimpleXMLExtended */
             $XMLcreator = $XMLoai_dc->addChild('dc:creator', '', 'http://purl.org/dc/elements/1.1/');
@@ -423,7 +457,7 @@ class OaiController extends Controller
             $XMLoai_dc->addChild('dc:language', $codeLocale3, 'http://purl.org/dc/elements/1.1/');
         }
 
-        if ($this->container->getParameter('pumukitoai.use_license_as_dc_rights')) {
+        if ($this->pumukitOAIUseLicenseAsDcRights) {
             /** @var SimpleXMLExtended */
             $XMLrights = $XMLoai_dc->addChild('dc:rights', '', 'http://purl.org/dc/elements/1.1/');
             $XMLrights->addCDATA($object->getLicense());
@@ -438,7 +472,7 @@ class OaiController extends Controller
         $toDom->appendChild($toDom->ownerDocument->importNode($fromDom, true));
     }
 
-    private function genResponse($responseXml, $verb)
+    private function genResponse($responseXml, $verb): Response
     {
         $XML = new SimpleXMLExtended('<OAI-PMH></OAI-PMH>');
         $XML->addAttribute('xmlns', 'http://www.openarchives.org/OAI/2.0/');
@@ -458,7 +492,7 @@ class OaiController extends Controller
         return new Response($XML->asXML(), 200, ['Content-Type' => 'text/xml']);
     }
 
-    private function getResumptionToken(Request $request)
+    private function getResumptionToken(Request $request): ResumptionToken
     {
         if ($request->query->has('resumptionToken')) {
             return ResumptionToken::decode($request->query->get('resumptionToken'));
@@ -477,8 +511,6 @@ class OaiController extends Controller
 
     private function generateTrackFileUrl($track)
     {
-        $trackService = $this->get('pumukit_baseplayer.trackurl');
-
-        return $trackService->generateTrackFileUrl($track, UrlGeneratorInterface::ABSOLUTE_URL);
+        return $this->trackService->generateTrackFileUrl($track, UrlGeneratorInterface::ABSOLUTE_URL);
     }
 }

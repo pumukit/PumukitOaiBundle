@@ -1,0 +1,27 @@
+services:
+  _defaults:
+    autowire:      true
+    autoconfigure: true
+    public:        true
+    bind:
+      $displayTrackTag: '%pumukitoai.display_track_tag%'
+      $pubChannelTag: '%pumukitoai.pub_channel_tag%'
+      $listOnlyPublishedObjects: '%pumukitoai.list_only_published_objects%'
+      $pumukitInfo: '%pumukit.info%'
+      $pumukitOAIUseDcThumbnail: '%pumukitoai.use_dc_thumbnail%'
+      $pumukitOAIDcIdentifierUrlMapping: '%pumukitoai.dc_identifier_url_mapping%'
+      $pumukitOAIAudioDcType: '%pumukitoai.audio_dc_type%'
+      $pumukitOAIVideoDcType: '%pumukitoai.video_dc_type%'
+      $pumukitOAIDcSubjectFormat: '%pumukitoai.dc_subject_format%'
+      $pumukitOAIUseCopyrightAsDcPublisher: '%pumukitoai.use_copyright_as_dc_publisher%'
+      $pumukitOAIRoleForDcCreator: '%pumukitoai.role_for_dc_creator%'
+      $pumukitOAIUseLicenseAsDcRights: '%pumukitoai.use_license_as_dc_rights%'
+
+  Pumukit\OAIBundle\Controller\:
+    resource: '../../Controller'
+    tags: ['controller.service_arguments']
+
+  Pumukit\OaiBundle\EventListener\FilterListener:
+    class: Pumukit\OaiBundle\EventListener\FilterListener
+    tags:
+      - { name: "kernel.event_listener", event: "kernel.request" }

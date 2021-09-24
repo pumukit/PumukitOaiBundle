@@ -1,18 +1,6 @@
-Installation Guide
-==================
+PumukitOAIBundle configuration
+==============================
 
-Steps to install and configure this bundle:
-
-1.- Install the bundle into your Pumukit root project:
-
-```bash
-$ cd /path/to/pumukit/
-$ php app/console pumukit:install:bundle Pumukit/OaiBundle/PumukitOaiBundle
-```
-
-2.- (Optional) Configure the bundle:
-
-```
 # Default configuration for extension with alias: "pumukit_oai"
 pumukit_oai:
 

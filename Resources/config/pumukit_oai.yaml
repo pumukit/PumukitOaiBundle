@@ -17,7 +17,7 @@ services:
       $pumukitOAIRoleForDcCreator: '%pumukitoai.role_for_dc_creator%'
       $pumukitOAIUseLicenseAsDcRights: '%pumukitoai.use_license_as_dc_rights%'
 
-  Pumukit\OAIBundle\Controller\:
+  Pumukit\OaiBundle\Controller\:
     resource: '../../Controller'
     tags: ['controller.service_arguments']
 

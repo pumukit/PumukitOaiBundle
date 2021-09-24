@@ -1,4 +1,4 @@
-pumukit_podcast_bundle:
+pumukit_oai_bundle:
     resource: "@PumukitOaiBundle/Controller/"
     type:     annotation
     prefix:   /

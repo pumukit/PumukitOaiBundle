@@ -68,15 +68,20 @@ class OaiController extends AbstractController
         switch ($request->query->get('verb')) {
             case 'Identify':
                 return $this->identify();
+
             case 'ListMetadataFormats':
                 return $this->listMetadataFormats($request);
+
             case 'ListSets':
                 return $this->listSets($request);
+
             case 'ListIdentifiers':
             case 'ListRecords':
                 return $this->listIdentifiers($request);
+
             case 'GetRecord':
                 return $this->getRecord($request);
+
             default:
                 return $this->error('badVerb', 'Illegal OAI verb');
         }
@@ -353,6 +358,7 @@ class OaiController extends AbstractController
                 }
 
                 break;
+
             case 'portal_and_track':
                 $url = $this->generateUrl('pumukit_webtv_multimediaobject_index', ['id' => $object->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
                 $XMLoai_dc->addChild('dc:identifier', $url, 'http://purl.org/dc/elements/1.1/');
@@ -362,6 +368,7 @@ class OaiController extends AbstractController
                 }
 
                 break;
+
             case 'track':
                 foreach ($object->getFilteredTracksWithTags(['display']) as $track) {
                     $url = $this->generateTrackFileUrl($track);
@@ -369,11 +376,13 @@ class OaiController extends AbstractController
                 }
 
                 break;
+
             case 'iframe':
                 $url = $this->generateUrl('pumukit_webtv_multimediaobject_iframe', ['id' => $object->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
                 $XMLoai_dc->addChild('dc:identifier', $url, 'http://purl.org/dc/elements/1.1/');
 
                 break;
+
             default: //portal
                 $url = $this->generateUrl('pumukit_webtv_multimediaobject_index', ['id' => $object->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
                 $XMLoai_dc->addChild('dc:identifier', $url, 'http://purl.org/dc/elements/1.1/');
@@ -394,20 +403,24 @@ class OaiController extends AbstractController
         foreach ($object->getTags() as $tag) {
             /** @var SimpleXMLExtended */
             $XMLsubject = $XMLoai_dc->addChild('dc:subject', '', 'http://purl.org/dc/elements/1.1/');
+
             switch ($this->pumukitOAIDcSubjectFormat) {
                 case 'e-ciencia':
                     $cod = $tag->getCod();
                     if (($tag->isDescendantOfByCod('UNESCO')) || (0 === strpos($tag->getCod(), 'U9'))) {
                         $cod = $tag->getLevel();
+
                         switch ($tag->getLevel()) {
                         case 3:
                             $cod = substr($tag->getCod(), 1, 2);
 
                             break;
+
                         case 4:
                             $cod = substr($tag->getCod(), 1, 4);
 
                             break;
+
                         case 5:
                             $cod = sprintf('%s.%s', substr($tag->getCod(), 1, 4), substr($tag->getCod(), 5, 2));
 
@@ -417,14 +430,17 @@ class OaiController extends AbstractController
                     $subject = sprintf('%s %s', $cod, $tag->getTitle());
 
                     break;
+
                 case 'all':
                     $subject = sprintf('%s - %s', $tag->getCod(), $tag->getTitle());
 
                     break;
+
                 case 'code':
                     $subject = $tag->getCod();
 
                     break;
+
                 default: //title
                     $subject = $tag->getTitle();
 

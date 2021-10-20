@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pumukit\OaiBundle\Tests\Utils;
 
 use PHPUnit\Framework\TestCase;
 use Pumukit\OaiBundle\Utils\ResumptionToken;
+use Pumukit\OaiBundle\Utils\ResumptionTokenException;
 
 /**
  * @internal
@@ -35,11 +38,9 @@ class ResumptionTokenTest extends TestCase
         $this->assertTrue(strlen($token->encode()) > 0);
     }
 
-    /**
-     * @expectedException \Pumukit\OaiBundle\Utils\ResumptionTokenException
-     */
     public function testInvalidDecode()
     {
+        $this->expectException(ResumptionTokenException::class);
         $rawToken = base64_encode('}}~~{{');
         $token = ResumptionToken::decode($rawToken);
     }

@@ -299,9 +299,11 @@ class OaiController extends AbstractController
         $XMLlistSets = new SimpleXMLExtended('<ListSets></ListSets>');
         foreach ($allSeries as $series) {
             $XMLset = $XMLlistSets->addChild('set');
+
             /** @var SimpleXMLExtended */
             $XMLsetSpec = $XMLset->addChild('setSpec');
             $XMLsetSpec->addCDATA($series->getId());
+
             /** @var SimpleXMLExtended */
             $XMLsetName = $XMLset->addChild('setName');
             $XMLsetName->addCDATA($series->getTitle());
@@ -324,10 +326,12 @@ class OaiController extends AbstractController
     private function genObjectHeader($XMLlist, $object)
     {
         $XMLheader = $XMLlist->addChild('header');
+
         /** @var SimpleXMLExtended */
         $XMLidentifier = $XMLheader->addChild('identifier');
         $XMLidentifier->addCDATA($object->getId());
         $XMLheader->addChild('datestamp', $object->getPublicDate()->format('Y-m-d'));
+
         /** @var SimpleXMLExtended */
         $XMLsetSpec = $XMLheader->addChild('setSpec');
         $XMLsetSpec->addCDATA($object->getSeries()->getId());
@@ -340,9 +344,11 @@ class OaiController extends AbstractController
         $XMLmetadata = $XMLlist->addChild('metadata');
 
         $XMLoai_dc = new SimpleXMLExtended('<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd"></oai_dc:dc>');
+
         /** @var SimpleXMLExtended */
         $XMLtitle = $XMLoai_dc->addChild('dc:title', '', 'http://purl.org/dc/elements/1.1/');
         $XMLtitle->addCDATA($object->getTitle());
+
         /** @var SimpleXMLExtended */
         $XMLdescription = $XMLoai_dc->addChild('dc:description', '', 'http://purl.org/dc/elements/1.1/');
         $XMLdescription->addCDATA($object->getDescription());
@@ -385,7 +391,7 @@ class OaiController extends AbstractController
 
                 break;
 
-            default: //portal
+            default: // portal
                 $url = $this->generateUrl('pumukit_webtv_multimediaobject_index', ['id' => $object->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
                 $XMLoai_dc->addChild('dc:identifier', $url, 'http://purl.org/dc/elements/1.1/');
 
@@ -409,24 +415,24 @@ class OaiController extends AbstractController
             switch ($this->pumukitOAIDcSubjectFormat) {
                 case 'e-ciencia':
                     $cod = $tag->getCod();
-                    if (($tag->isDescendantOfByCod('UNESCO')) || (0 === strpos($tag->getCod(), 'U9'))) {
+                    if ($tag->isDescendantOfByCod('UNESCO') || (0 === strpos($tag->getCod(), 'U9'))) {
                         $cod = $tag->getLevel();
 
                         switch ($tag->getLevel()) {
-                        case 3:
-                            $cod = substr($tag->getCod(), 1, 2);
+                            case 3:
+                                $cod = substr($tag->getCod(), 1, 2);
 
-                            break;
+                                break;
 
-                        case 4:
-                            $cod = substr($tag->getCod(), 1, 4);
+                            case 4:
+                                $cod = substr($tag->getCod(), 1, 4);
 
-                            break;
+                                break;
 
-                        case 5:
-                            $cod = sprintf('%s.%s', substr($tag->getCod(), 1, 4), substr($tag->getCod(), 5, 2));
+                            case 5:
+                                $cod = sprintf('%s.%s', substr($tag->getCod(), 1, 4), substr($tag->getCod(), 5, 2));
 
-                            break;
+                                break;
                         }
                     }
                     $subject = sprintf('%s %s', $cod, $tag->getTitle());
@@ -443,7 +449,7 @@ class OaiController extends AbstractController
 
                     break;
 
-                default: //title
+                default: // title
                     $subject = $tag->getTitle();
 
                     break;

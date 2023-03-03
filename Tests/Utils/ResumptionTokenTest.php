@@ -10,6 +10,7 @@ use Pumukit\OaiBundle\Utils\ResumptionTokenException;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 class ResumptionTokenTest extends TestCase

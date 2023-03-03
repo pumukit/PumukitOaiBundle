@@ -1,10 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pumukit\OaiBundle\Utils;
 
-use SimpleXMLElement;
-
-class SimpleXMLExtended extends SimpleXMLElement
+class SimpleXMLExtended extends \SimpleXMLElement
 {
     public function addCDATA($cData): void
     {

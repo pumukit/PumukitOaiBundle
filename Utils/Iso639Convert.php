@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pumukit\OaiBundle\Utils;
 
 class Iso639Convert
@@ -194,7 +196,7 @@ class Iso639Convert
         'za' => 'zha',
         'zu' => 'zul', ];
 
-    public static function get($code1)
+    public static function get($code1): string
     {
         return self::$languages[$code1] ?? '';
     }

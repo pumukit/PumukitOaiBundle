@@ -2,6 +2,8 @@ PumukitOAIBundle configuration
 ==============================
 
 # Default configuration for extension with alias: "pumukit_oai"
+
+```
 pumukit_oai:
 
     # List only multimedia objects in published status

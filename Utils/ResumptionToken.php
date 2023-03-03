@@ -1,8 +1,8 @@
 <?php
 
-namespace Pumukit\OaiBundle\Utils;
+declare(strict_types=1);
 
-use DateTime;
+namespace Pumukit\OaiBundle\Utils;
 
 class ResumptionToken
 {
@@ -12,7 +12,7 @@ class ResumptionToken
     private $metadataPrefix;
     private $set;
 
-    public function __construct(int $offset = 0, ?DateTime $from = null, ?DateTime $until = null, ?string $metadataPrefix = null, ?string $set = null)
+    public function __construct(int $offset = 0, ?\DateTime $from = null, ?\DateTime $until = null, ?string $metadataPrefix = null, ?string $set = null)
     {
         $this->offset = $offset;
         $this->from = $from;
@@ -26,12 +26,12 @@ class ResumptionToken
         return $this->offset;
     }
 
-    public function getFrom(): ?DateTime
+    public function getFrom(): ?\DateTime
     {
         return $this->from;
     }
 
-    public function getUntil(): ?DateTime
+    public function getUntil(): ?\DateTime
     {
         return $this->until;
     }
@@ -87,11 +87,11 @@ class ResumptionToken
         }
 
         if (!empty($params['from'])) {
-            $params['from'] = new DateTime('@'.$params['from']);
+            $params['from'] = new \DateTime('@'.$params['from']);
         }
 
         if (!empty($params['until'])) {
-            $params['until'] = new DateTime('@'.$params['until']);
+            $params['until'] = new \DateTime('@'.$params['until']);
         }
 
         return new self($params['offset'], $params['from'], $params['until'], $params['metadataPrefix'], $params['set']);

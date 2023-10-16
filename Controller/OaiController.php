@@ -137,7 +137,7 @@ class OaiController extends AbstractController
 
         $mmObjColl = $this->filter($limit, $token->getOffset(), $token->getFrom(), $token->getUntil(), $token->getSet());
 
-        if (0 === count($mmObjColl)) {
+        if (0 === (is_countable($mmObjColl) ? count($mmObjColl) : 0)) {
             return $this->error('noRecordsMatch', 'The combination of the values of the from, until, and set arguments results in an empty list');
         }
 
@@ -171,7 +171,7 @@ class OaiController extends AbstractController
 
         $next = $token->next();
         $cursor = $limit * $next->getOffset();
-        $count = count($mmObjColl);
+        $count = is_countable($mmObjColl) ? count($mmObjColl) : 0;
 
         if ($cursor < $count) {
             $XMLresumptionToken = $XMLlist->addChild('resumptionToken', $next->encode());
@@ -311,7 +311,7 @@ class OaiController extends AbstractController
 
         $next = $token->next();
         $cursor = $limit * $next->getOffset();
-        $count = count($allSeries);
+        $count = $allSeries === null ? 0 : count($allSeries);
 
         if ($cursor < $count) {
             $XMLresumptionToken = $XMLlistSets->addChild('resumptionToken', $next->encode());

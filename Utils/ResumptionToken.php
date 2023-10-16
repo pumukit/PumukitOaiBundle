@@ -63,7 +63,7 @@ class ResumptionToken
             $params['until'] = $this->until->getTimestamp();
         }
 
-        return base64_encode(json_encode($params));
+        return base64_encode(json_encode($params, JSON_THROW_ON_ERROR));
     }
 
     public function next(): ResumptionToken

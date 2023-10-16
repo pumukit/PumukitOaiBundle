@@ -311,7 +311,7 @@ class OaiController extends AbstractController
 
         $next = $token->next();
         $cursor = $limit * $next->getOffset();
-        $count = $allSeries === null ? 0 : count($allSeries);
+        $count = null === $allSeries ? 0 : count($allSeries);
 
         if ($cursor < $count) {
             $XMLresumptionToken = $XMLlistSets->addChild('resumptionToken', $next->encode());

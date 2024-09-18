@@ -353,6 +353,7 @@ class OaiController extends AbstractController
         $XMLdescription = $XMLoai_dc->addChild('dc:description', '', 'http://purl.org/dc/elements/1.1/');
         $XMLdescription->addCDATA($object->getDescription());
         $XMLoai_dc->addChild('dc:date', $object->getPublicDate()->format('Y-m-d'), 'http://purl.org/dc/elements/1.1/');
+        $XMLoai_dc->addChild('dc:updateAt', $object->isUpdatedAt()->format('Y-m-d H:i:s'), 'http://purl.org/dc/elements/1.1/');
 
         switch ($this->pumukitOAIDcIdentifierUrlMapping) {
             case 'all':

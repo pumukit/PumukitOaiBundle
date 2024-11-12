@@ -16,6 +16,7 @@ use Pumukit\SchemaBundle\Services\PicService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mime\MimeTypes;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -405,9 +406,11 @@ class OaiController extends AbstractController
         }
 
         foreach ($object->getFilteredTracksWithTags(['display']) as $track) {
-            $type = $track->isOnlyAudio() ? $this->pumukitOAIAudioDcType : $this->pumukitOAIVideoDcType;
+            $type = $track->metadata()->isOnlyAudio() ? $this->pumukitOAIAudioDcType : $this->pumukitOAIVideoDcType;
             $XMLoai_dc->addChild('dc:type', $type, 'http://purl.org/dc/elements/1.1/');
-            $XMLoai_dc->addChild('dc:format', $track->getMimeType(), 'http://purl.org/dc/elements/1.1/');
+            $mimeTypes = new MimeTypes();
+            $mimeType = $mimeTypes->guessMimeType($track->storage()->path()->path());
+            $XMLoai_dc->addChild('dc:format', $mimeType, 'http://purl.org/dc/elements/1.1/');
         }
         foreach ($object->getTags() as $tag) {
             /** @var SimpleXMLExtended */

@@ -12,6 +12,8 @@ services:
       $pumukitOAIDcIdentifierUrlMapping: '%pumukitoai.dc_identifier_url_mapping%'
       $pumukitOAIAudioDcType: '%pumukitoai.audio_dc_type%'
       $pumukitOAIVideoDcType: '%pumukitoai.video_dc_type%'
+      $pumukitOAIImageDcType: '%pumukitoai.image_dc_type%'
+      $pumukitOAIDocDcType: '%pumukitoai.doc_dc_type%'
       $pumukitOAIDcSubjectFormat: '%pumukitoai.dc_subject_format%'
       $pumukitOAIUseCopyrightAsDcPublisher: '%pumukitoai.use_copyright_as_dc_publisher%'
       $pumukitOAIRoleForDcCreator: '%pumukitoai.role_for_dc_creator%'

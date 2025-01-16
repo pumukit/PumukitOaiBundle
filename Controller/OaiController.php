@@ -422,11 +422,16 @@ class OaiController extends AbstractController
             if ($object->isDocumentType()) {
                 $type = $this->pumukitOAIDocDcType;
             }
+            if ($object->isExternalType()) {
+                $type = 'External media';
+            }
 
             $XMLoai_dc->addChild('dc:type', $type, 'http://purl.org/dc/elements/1.1/');
-            $mimeTypes = new MimeTypes();
-            $mimeType = $mimeTypes->guessMimeType($track->storage()->path()->path());
-            $XMLoai_dc->addChild('dc:format', $mimeType, 'http://purl.org/dc/elements/1.1/');
+            if (!$object->isExternalType()) {
+                $mimeTypes = new MimeTypes();
+                $mimeType = $mimeTypes->guessMimeType($track->storage()->path()->path());
+                $XMLoai_dc->addChild('dc:format', $mimeType, 'http://purl.org/dc/elements/1.1/');
+            }
         }
         foreach ($object->getTags() as $tag) {
             /** @var SimpleXMLExtended */

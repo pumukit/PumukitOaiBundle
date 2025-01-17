@@ -30,6 +30,8 @@ class OaiController extends AbstractController
     private $pumukitOAIDcIdentifierUrlMapping;
     private $pumukitOAIAudioDcType;
     private $pumukitOAIVideoDcType;
+    private $pumukitOAIImageDcType;
+    private $pumukitOAIDocDcType;
     private $pumukitOAIDcSubjectFormat;
     private $pumukitOAIUseCopyrightAsDcPublisher;
     private $pumukitOAIRoleForDcCreator;
@@ -44,6 +46,8 @@ class OaiController extends AbstractController
         $pumukitOAIDcIdentifierUrlMapping,
         $pumukitOAIAudioDcType,
         $pumukitOAIVideoDcType,
+        $pumukitOAIImageDcType,
+        $pumukitOAIDocDcType,
         $pumukitOAIDcSubjectFormat,
         $pumukitOAIUseCopyrightAsDcPublisher,
         $pumukitOAIRoleForDcCreator,
@@ -57,6 +61,8 @@ class OaiController extends AbstractController
         $this->pumukitOAIDcIdentifierUrlMapping = $pumukitOAIDcIdentifierUrlMapping;
         $this->pumukitOAIAudioDcType = $pumukitOAIAudioDcType;
         $this->pumukitOAIVideoDcType = $pumukitOAIVideoDcType;
+        $this->pumukitOAIImageDcType = $pumukitOAIImageDcType;
+        $this->pumukitOAIDocDcType = $pumukitOAIDocDcType;
         $this->pumukitOAIDcSubjectFormat = $pumukitOAIDcSubjectFormat;
         $this->pumukitOAIUseCopyrightAsDcPublisher = $pumukitOAIUseCopyrightAsDcPublisher;
         $this->pumukitOAIRoleForDcCreator = $pumukitOAIRoleForDcCreator;
@@ -405,12 +411,27 @@ class OaiController extends AbstractController
             $XMLoai_dc->addChild('dc:thumbnail', $thumbnail, 'http://purl.org/dc/elements/1.1/');
         }
 
-        foreach ($object->getFilteredTracksWithTags(['display']) as $track) {
-            $type = $track->metadata()->isOnlyAudio() ? $this->pumukitOAIAudioDcType : $this->pumukitOAIVideoDcType;
+        foreach ($object->getTracksWithTag('display') as $track) {
+            $type = $this->pumukitOAIVideoDcType;
+            if ($object->isAudioType()) {
+                $type = $this->pumukitOAIAudioDcType;
+            }
+            if ($object->isImageType()) {
+                $type = $this->pumukitOAIImageDcType;
+            }
+            if ($object->isDocumentType()) {
+                $type = $this->pumukitOAIDocDcType;
+            }
+            if ($object->isExternalType()) {
+                $type = 'External media';
+            }
+
             $XMLoai_dc->addChild('dc:type', $type, 'http://purl.org/dc/elements/1.1/');
-            $mimeTypes = new MimeTypes();
-            $mimeType = $mimeTypes->guessMimeType($track->storage()->path()->path());
-            $XMLoai_dc->addChild('dc:format', $mimeType, 'http://purl.org/dc/elements/1.1/');
+            if (!$object->isExternalType()) {
+                $mimeTypes = new MimeTypes();
+                $mimeType = $mimeTypes->guessMimeType($track->storage()->path()->path());
+                $XMLoai_dc->addChild('dc:format', $mimeType, 'http://purl.org/dc/elements/1.1/');
+            }
         }
         foreach ($object->getTags() as $tag) {
             /** @var SimpleXMLExtended */

@@ -24,6 +24,8 @@ class PumukitOaiExtension extends Extension
         $container->setParameter('pumukitoai.use_copyright_as_dc_publisher', $config['use_copyright_as_dc_publisher']);
         $container->setParameter('pumukitoai.video_dc_type', $config['video_dc_type']);
         $container->setParameter('pumukitoai.audio_dc_type', $config['audio_dc_type']);
+        $container->setParameter('pumukitoai.image_dc_type', $config['image_dc_type']);
+        $container->setParameter('pumukitoai.doc_dc_type', $config['doc_dc_type']);
         $container->setParameter('pumukitoai.role_for_dc_creator', $config['role_for_dc_creator']);
         $container->setParameter('pumukitoai.dc_subject_format', $config['dc_subject_format']);
         $container->setParameter('pumukitoai.dc_identifier_url_mapping', $config['dc_identifier_url_mapping']);

@@ -195,7 +195,7 @@ class OaiController extends AbstractController
         return $this->genResponse($XMLrequest, $XMLerror);
     }
 
-    protected function filter($limit, $offset, \DateTime $from = null, \DateTime $until = null, $set = null)
+    protected function filter($limit, $offset, ?\DateTime $from = null, ?\DateTime $until = null, $set = null)
     {
         $multimediaObjectRepo = $this->documentManager->getRepository(MultimediaObject::class);
         $seriesRepo = $this->documentManager->getRepository(Series::class);
@@ -501,7 +501,7 @@ class OaiController extends AbstractController
         $XML = new SimpleXMLExtended('<OAI-PMH></OAI-PMH>');
         $XML->addAttribute('xmlns', 'http://www.openarchives.org/OAI/2.0/');
         $XML->addAttribute('xsi:schemaLocation', 'http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd', 'http://www.w3.org/2001/XMLSchema-instance');
-        $XML->addChild('responseDate', date('Y-m-d\\TH:i:s\\Z'));
+        $XML->addChild('responseDate', date('Y-m-d\TH:i:s\Z'));
 
         $toDom = dom_import_simplexml($XML);
         $fromDom = dom_import_simplexml($responseXml);

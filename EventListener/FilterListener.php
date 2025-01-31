@@ -31,7 +31,7 @@ class FilterListener
     public function onKernelRequest(RequestEvent $event): void
     {
         $req = $event->getRequest();
-        if (HttpKernelInterface::MASTER_REQUEST === $event->getRequestType() && 'Pumukit\\OaiBundle' === substr($req->attributes->get('_controller'), 0, 17)) {
+        if (HttpKernelInterface::MASTER_REQUEST === $event->getRequestType() && 'Pumukit\OaiBundle' === substr($req->attributes->get('_controller'), 0, 17)) {
             $filter = $this->dm->getFilterCollection()->enable('frontend');
             $filter->setParameter('pub_channel_tag', $this->pubChannelTag);
             $filter->setParameter('display_track_tag', $this->displayTrackTag);

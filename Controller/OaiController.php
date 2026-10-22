@@ -17,7 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mime\MimeTypes;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class OaiController extends AbstractController
@@ -69,9 +69,7 @@ class OaiController extends AbstractController
         $this->pumukitOAIUseLicenseAsDcRights = $pumukitOAIUseLicenseAsDcRights;
     }
 
-    /**
-     * @Route("/oai.xml", defaults={"_format": "xml"}, name="pumukit_oai_index")
-     */
+    #[Route('/oai.xml', defaults: ['_format' => 'xml'], name: 'pumukit_oai_index')]
     public function indexAction(Request $request)
     {
         switch ($request->query->get('verb')) {
@@ -202,7 +200,7 @@ class OaiController extends AbstractController
         return $this->genResponse($XMLrequest, $XMLerror);
     }
 
-    protected function filter($limit, $offset, \DateTime $from = null, \DateTime $until = null, $set = null)
+    protected function filter($limit, $offset, ?\DateTime $from = null, ?\DateTime $until = null, $set = null)
     {
         $multimediaObjectRepo = $this->documentManager->getRepository(MultimediaObject::class);
         $seriesRepo = $this->documentManager->getRepository(Series::class);
@@ -526,7 +524,7 @@ class OaiController extends AbstractController
         $XML = new SimpleXMLExtended('<OAI-PMH></OAI-PMH>');
         $XML->addAttribute('xmlns', 'http://www.openarchives.org/OAI/2.0/');
         $XML->addAttribute('xsi:schemaLocation', 'http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd', 'http://www.w3.org/2001/XMLSchema-instance');
-        $XML->addChild('responseDate', date('Y-m-d\\TH:i:s\\Z'));
+        $XML->addChild('responseDate', date('Y-m-d\TH:i:s\Z'));
 
         $toDom = dom_import_simplexml($XML);
         $fromDom = dom_import_simplexml($responseXml);
@@ -547,13 +545,13 @@ class OaiController extends AbstractController
             return ResumptionToken::decode($request->query->get('resumptionToken'));
         }
 
-        $from = $request->query->has('from') ?
-            \DateTime::createFromFormat('Y-m-d', $request->query->get('from')) :
-            null;
+        $from = $request->query->has('from')
+            ? \DateTime::createFromFormat('Y-m-d', $request->query->get('from'))
+            : null;
 
-        $until = $request->query->has('until') ?
-            \DateTime::createFromFormat('Y-m-d', $request->query->get('until')) :
-            null;
+        $until = $request->query->has('until')
+            ? \DateTime::createFromFormat('Y-m-d', $request->query->get('until'))
+            : null;
 
         return new ResumptionToken(0, $from, $until, $request->query->get('metadataPrefix'), $request->query->get('set'));
     }

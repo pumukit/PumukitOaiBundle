@@ -1,4 +1,4 @@
 pumukit_oai_bundle:
     resource: "@PumukitOaiBundle/Controller/"
-    type:     annotation
+    type:     attribute
     prefix:   /

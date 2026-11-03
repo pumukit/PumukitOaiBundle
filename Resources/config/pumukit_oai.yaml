@@ -3,27 +3,32 @@ services:
     autowire:      true
     autoconfigure: true
     public:        true
-    bind:
-      $displayTrackTag: '%pumukitoai.display_track_tag%'
-      $pubChannelTag: '%pumukitoai.pub_channel_tag%'
-      $listOnlyPublishedObjects: '%pumukitoai.list_only_published_objects%'
-      $pumukitInfo: '%pumukit.info%'
-      $pumukitOAIUseDcThumbnail: '%pumukitoai.use_dc_thumbnail%'
-      $pumukitOAIDcIdentifierUrlMapping: '%pumukitoai.dc_identifier_url_mapping%'
-      $pumukitOAIAudioDcType: '%pumukitoai.audio_dc_type%'
-      $pumukitOAIVideoDcType: '%pumukitoai.video_dc_type%'
-      $pumukitOAIImageDcType: '%pumukitoai.image_dc_type%'
-      $pumukitOAIDocDcType: '%pumukitoai.doc_dc_type%'
-      $pumukitOAIDcSubjectFormat: '%pumukitoai.dc_subject_format%'
-      $pumukitOAIUseCopyrightAsDcPublisher: '%pumukitoai.use_copyright_as_dc_publisher%'
-      $pumukitOAIRoleForDcCreator: '%pumukitoai.role_for_dc_creator%'
-      $pumukitOAIUseLicenseAsDcRights: '%pumukitoai.use_license_as_dc_rights%'
 
   Pumukit\OaiBundle\Controller\:
     resource: '../../Controller'
     tags: ['controller.service_arguments']
 
-  Pumukit\OaiBundle\EventListener\FilterListener:
-    class: Pumukit\OaiBundle\EventListener\FilterListener
-    tags:
-      - { name: "kernel.event_listener", event: "kernel.request" }
+  Pumukit\OaiBundle\Services\OaiConfiguration:
+    arguments:
+      $listOnlyPublishedObjects: '%pumukitoai.list_only_published_objects%'
+      $pubChannelTag: '%pumukitoai.pub_channel_tag%'
+      $displayTrackTag: '%pumukitoai.display_track_tag%'
+      $pageSize: '%pumukitoai.page_size%'
+      $useDcThumbnail: '%pumukitoai.use_dc_thumbnail%'
+      $videoDcType: '%pumukitoai.video_dc_type%'
+      $audioDcType: '%pumukitoai.audio_dc_type%'
+      $docDcType: '%pumukitoai.doc_dc_type%'
+      $imageDcType: '%pumukitoai.image_dc_type%'
+      $roleForDcCreator: '%pumukitoai.role_for_dc_creator%'
+      $useLicenseAsDcRights: '%pumukitoai.use_license_as_dc_rights%'
+      $useCopyrightAsDcPublisher: '%pumukitoai.use_copyright_as_dc_publisher%'
+      $dcSubjectFormat: '%pumukitoai.dc_subject_format%'
+      $dcIdentifierUrlMapping: '%pumukitoai.dc_identifier_url_mapping%'
+      $locale: '%kernel.default_locale%'
+      $pumukitInfo: '%pumukit.info%'
+
+  Pumukit\OaiBundle\Services\RecordRepository: ~
+
+  Pumukit\OaiBundle\Services\RecordWriter: ~
+
+  Pumukit\OaiBundle\Services\OaiService: ~

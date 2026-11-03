@@ -15,11 +15,18 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class OaiController extends AbstractController
 {
-    public function __construct(private readonly OaiService $oaiService) {}
+    public function __construct(
+        private readonly OaiService $oaiService,
+        private readonly bool $enabled = true,
+    ) {}
 
     #[Route('/oai.xml', name: 'pumukit_oai_index', defaults: ['_format' => 'xml'], methods: ['GET', 'HEAD', 'POST'])]
     public function indexAction(Request $request): Response
     {
+        if (!$this->enabled) {
+            throw $this->createNotFoundException();
+        }
+
         $baseUrl = $this->generateUrl('pumukit_oai_index', [], UrlGeneratorInterface::ABSOLUTE_URL);
 
         try {

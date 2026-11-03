@@ -16,6 +16,10 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
+            ->booleanNode('enable')
+            ->defaultTrue()
+            ->info('If false, /oai.xml gives 404')
+            ->end()
             ->booleanNode('list_only_published_objects')
             ->defaultTrue()
             ->info('List only multimedia objects in published status')

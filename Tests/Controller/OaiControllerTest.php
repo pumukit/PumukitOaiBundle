@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace Pumukit\OaiBundle\Tests\Controller;
 
+use Pumukit\OaiBundle\Controller\OaiController;
+use Pumukit\OaiBundle\Services\OaiService;
 use Pumukit\OaiBundle\Tests\OaiTestCase;
 use Pumukit\SchemaBundle\Document\EmbeddedBroadcast;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
 use Pumukit\SchemaBundle\Document\Person;
 use Pumukit\SchemaBundle\Document\Role;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * @internal
@@ -135,6 +139,15 @@ class OaiControllerTest extends OaiTestCase
 
         $this->assertNull($this->errorCode($this->get('verb=ListRecords&metadataPrefix=oai_dc&set=_all_')));
         $this->assertNull($this->errorCode($this->get('verb=ListMetadataFormats&identifier='.$record->getId())));
+    }
+
+    public function testTheDisabledRepositoryGivesNotFound(): void
+    {
+        $controller = new OaiController(self::getContainer()->get(OaiService::class), false);
+
+        $this->expectException(NotFoundHttpException::class);
+
+        $controller->indexAction(Request::create('/oai.xml?verb=Identify'));
     }
 
     public function testListSetsHidesTheHiddenSeries(): void

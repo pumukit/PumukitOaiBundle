@@ -74,6 +74,7 @@ The empty elements are left out, and the texts are cleaned of characters that ar
 
 ```yaml
 pumukit_oai:
+    enable: true
     list_only_published_objects: true
     pub_channel_tag: PUCHWEBTV
     display_track_tag: display
@@ -92,6 +93,7 @@ pumukit_oai:
 
 | Option | Default | Description |
 |--------|---------|-------------|
+| `enable` | `true` | If false, `/oai.xml` gives 404 |
 | `list_only_published_objects` | `true` | List only the videos in published status |
 | `pub_channel_tag` | `PUCHWEBTV` | Publication channel the videos must have |
 | `display_track_tag` | `display` | Tag of the visible media the videos must have |

@@ -93,7 +93,7 @@ pumukit_oai:
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `enable` | `true` | If false, `/oai.xml` gives 404 |
+| `enable` | `true` | If false, `/oai.xml` gives 404 because no route is loaded, and nothing else of the bundle is loaded |
 | `list_only_published_objects` | `true` | List only the videos in published status |
 | `pub_channel_tag` | `PUCHWEBTV` | Publication channel the videos must have |
 | `display_track_tag` | `display` | Tag of the visible media the videos must have |

@@ -18,7 +18,7 @@ class Configuration implements ConfigurationInterface
             ->children()
             ->booleanNode('enable')
             ->defaultTrue()
-            ->info('If false, /oai.xml gives 404')
+            ->info('If false, /oai.xml gives 404 because no route is loaded, and nothing else of the bundle is loaded')
             ->end()
             ->booleanNode('list_only_published_objects')
             ->defaultTrue()

@@ -98,6 +98,7 @@ class OaiServiceTest extends OaiTestCase
         $this->assertSame([], $xml->xpath('//dc:thumbnail'));
         $identifiers = $this->values($xml, '//dc:identifier');
         $router = self::getContainer()->get('router');
+        $this->assertInstanceOf(UrlGeneratorInterface::class, $router);
         $this->assertSame([
             $router->generate('pumukit_webtv_multimediaobject_iframe', ['id' => $record->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
             $router->generate('pumukit_webtv_multimediaobject_index', ['id' => $record->getId()], UrlGeneratorInterface::ABSOLUTE_URL),

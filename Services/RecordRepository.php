@@ -44,7 +44,7 @@ final class RecordRepository
             $queryBuilder->field('_id')->gt(new ObjectId($token->after));
         }
 
-        return $queryBuilder->getQuery()->execute()->toArray();
+        return $queryBuilder->getQuery()->toArray();
     }
 
     public function count(ResumptionToken $token): int
@@ -91,7 +91,7 @@ final class RecordRepository
             $queryBuilder->field('_id')->gt(new ObjectId($after));
         }
 
-        return $queryBuilder->getQuery()->execute()->toArray();
+        return $queryBuilder->getQuery()->toArray();
     }
 
     public function seriesCount(): int
